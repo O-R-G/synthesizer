@@ -7,7 +7,7 @@ import processing.pdf.*;
 
 PFont font[];     // array of references to fonts
 String fontnames[];         // original source names
-int fontSize = 36;  
+int fontSize = 96;  
 int fontLength;  // length of font[] (computed when filled)
 int thisFont; // pointer to font[] of currently selected
 int fontLoadStart = 0; // first numbered font to try
@@ -31,42 +31,35 @@ boolean shiftpressed;
 boolean saveframe;
 
 void setup() {
-
     createMTDBT2F4D();
     size(720, 720, P3D);
 
     textSize(fontSize);
     textAlign(CENTER);
-
     updatePerspective(fov);
 }
 
 void draw() {
 
-    // update font
+    if (saveframe)
+        beginRaw(PDF, "output-####.pdf");
 
-    if ( ( thisFont + fontRangeDirection >= fontRangeStart ) && ( thisFont + fontRangeDirection <= fontRangeEnd ) ) {
+    if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {
       thisFont += fontRangeDirection;
     } else {
       fontRangeDirection *= -1;
       thisFont += fontRangeDirection;
     }
+    textFont(font[thisFont]);
 
-    if (saveframe)
-        beginRaw(PDF, "output-####.pdf");
-
-    // clear screen
+    background(0,0,255);
+    noStroke();
+    fill(255,30);
 
     // pushMatrix();
     translate(width/2, height/2);
     // rotate(rotation);
-    // background(0,0,255);
-    noStroke();
-    // fill(0,0,255,100);
-    fill(0,0,255);
-    rect(-width/2, -height/2, width, height);
-    textFont(font[thisFont]);
-    fill(255, 100);
+    ortho();
 
     // lighting 
 
@@ -80,16 +73,11 @@ void draw() {
     rotateY(rotationY);
     rotateX(rotationX);
     scale(scale);
-    // updatePerspective(fov);
 
-    // text(asterisk, 0, textAscent()*.67);
-    // text("SYNTHESIZER", 0, 0);
-    // text("SYNTHESIZER", 0, 0, -10);
-    // text("SYNTHESIZER", 0, 0, -100);
-
-    for (int i=0; i<100; i+=2) {
-        // text("S", 0, 0, i);
-        text("SYNTHESIZER", 0, 0, i);
+    for (int i=0; i<100; i+=3) {
+        text("JASON", 0, 0, i);
+        // text("SYNTHESIZER", 0, 0, i);
+        // text("SPEKTRIX", 0, 0, i);
     }
 
     if (saveframe) {
@@ -157,49 +145,52 @@ void keyReleased() {
     shiftpressed = false;
 }
 
-
 void createMTDBT2F4D() {
 
     String fontDataFolder = "fonts/"; 
 
-  // createFont() works either from data folder or from installed fonts
-  // renders with installed fonts if in regular JAVA2D mode
-  // the fonts installed in sketch data folder make it possible to export standalone app
-  // but the performance seems to suffer a little. also requires appending extension .ttf
-  // biggest issue is that redundantly named fonts create referencing problems
+    // createFont() works either from data folder or from installed fonts
+    // renders with installed fonts if in regular JAVA2D mode
+    // the fonts installed in sketch data folder make it possible to export standalone app
+    // but the performance seems to suffer a little. also requires appending extension .ttf
+    // biggest issue is that redundantly named fonts create referencing problems
+    // outline fonts look crisp, but run slow
+    // .vlw fonts run fast, but are bitmapped
 
-  int fontLoadLimit = fontLoadEnd - fontLoadStart;
-  font = new PFont[fontLoadLimit];
-  fontnames = new String[fontLoadLimit];
-  fontLength = 0; // reset
+    // textMode(SHAPE); // outline fonts 
+    textMode(MODEL);    // .vlw texture fonts
+      
+    int fontLoadLimit = fontLoadEnd - fontLoadStart;
+    font = new PFont[fontLoadLimit];
+    fontnames = new String[fontLoadLimit];
+    fontLength = 0; // reset
+    
+    for ( int i = 0; i < fontLoadLimit; i++ ) {
+        String fontStub = fontDataFolder + "/mtdbt2f4d-" + i + ".ttf"; // from sketch /data
 
-  for ( int i = 0; i < fontLoadLimit; i++ ) {
-    String fontStub = fontDataFolder + "/mtdbt2f4d-" + i + ".ttf"; // from sketch /data
-
-    if ( createFont(fontStub, fontSize, true) != null ) {
-      font[fontLength] = createFont(fontStub, fontSize, true);
-      fontnames[fontLength] = "mtdbt2f4d-" + i;
-      if (debug) {
-        println("/mtdbt2f4d-" + i + ".ttf" + " ** OK **");
-      }
-      fontLength++;
+        if ( createFont(fontStub, fontSize, true) != null ) {
+            font[fontLength] = createFont(fontStub, fontSize, true);
+            fontnames[fontLength] = "mtdbt2f4d-" + i;
+            if (debug) {
+                println("/mtdbt2f4d-" + i + ".ttf" + " ** OK **");
+            }
+        fontLength++;
+        }
     }
-  }
 
-  fontRangeStart = 0;
-  fontRangeEnd = fontLength-1;
-  thisFont = fontRangeStart;
+    fontRangeStart = 0;
+    fontRangeEnd = fontLength-1;
+    thisFont = fontRangeStart;
 
-  if (debug) {
-    println("###################################");
-    println("fontRangeStart = " + fontRangeStart);
-    println("fontRangeEnd = " + fontRangeEnd);
-    println("fontLoadLimit = " + fontLoadLimit);
-    println("fontLength = " + fontLength);
-    println("font.length = " + font.length);
-    println("###################################");
-    println("** init complete -- " + fontLength + " / " + font.length + " **");
-  }
-
-  createMTDBT2F4Dbusy = false;
+    if (debug) {
+        println("###################################");
+        println("fontRangeStart = " + fontRangeStart);
+        println("fontRangeEnd = " + fontRangeEnd);
+        println("fontLoadLimit = " + fontLoadLimit);
+        println("fontLength = " + fontLength);
+        println("font.length = " + font.length);
+        println("###################################");
+        println("** init complete -- " + fontLength + " / " + font.length + " **");
+    }
+    createMTDBT2F4Dbusy = false;
 }

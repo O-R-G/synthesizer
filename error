@@ -1,8 +1,8 @@
-2019-03-01 13:51:22.264 java[2291:360758] pid(2291)/euid(501) is calling TIS/TSM in non-main thread environment, ERROR : This is NOT allowed. Please call TIS/TSM in main thread!!!
-2019-03-01 13:51:22.637 java[2291:360758] WARNING: NSWindow drag regions should only be invalidated on the Main Thread! This will throw an exception in the future. Called from (
+2019-03-01 16:05:18.248 java[2955:467370] pid(2955)/euid(501) is calling TIS/TSM in non-main thread environment, ERROR : This is NOT allowed. Please call TIS/TSM in main thread!!!
+2019-03-01 16:05:18.675 java[2955:467370] WARNING: NSWindow drag regions should only be invalidated on the Main Thread! This will throw an exception in the future. Called from (
 	0   AppKit                              0x00007fff45755ccc -[NSWindow(NSWindow_Theme) _postWindowNeedsToResetDragMarginsUnlessPostingDisabled] + 386
 	1   AppKit                              0x00007fff4575307c -[NSWindow _initContent:styleMask:backing:defer:contentView:] + 1488
 	2   AppKit                              0x00007fff45752aa6 -[NSWindow initWithContentRect:styleMask:backing:defer:] + 45
-	3   libnativewindow_macosx.jnilib       0x0000000130d613fe Java_jogamp_nativewindow_macosx_OSXUtil_CreateNSWindow0 + 398
-	4   ???                                 0x0000000116306a88 0x0 + 4667239048
+	3   libnativewindow_macosx.jnilib       0x000000012e93f3fe Java_jogamp_nativewindow_macosx_OSXUtil_CreateNSWindow0 + 398
+	4   ???                                 0x000000010ee20a88 0x0 + 4544662152
 )

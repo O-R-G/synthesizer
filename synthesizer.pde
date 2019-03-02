@@ -92,8 +92,8 @@ void draw() {
             fill(255);
 	else 
 	    fill(255,50);
-        // text("SYNTHESIZER", 0, 0, i*10);
-        text("FOREVER", 0, 0, i*10);
+        text("SYNTHESIZER", 0, 0, i*10);
+        // text("FOREVER", 0, 0, i*10);
         // text("S", 0, 0, i*10);
     }
 

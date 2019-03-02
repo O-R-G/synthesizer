@@ -7,7 +7,7 @@ import processing.pdf.*;
 
 PFont font[];     // array of references to fonts
 String fontnames[];         // original source names
-int fontSize = 48;  
+int fontSize = 96;
 int fontLength;  // length of font[] (computed when filled)
 int thisFont; // pointer to font[] of currently selected
 int fontLoadStart = 0; // first numbered font to try
@@ -24,15 +24,16 @@ int counter;
 float adjustspeeds = 1.0;
 float rotationX = 0.0;
 float rotationY = 0.0;
-// float scale = 1.0;
-float scale = 2.25;
+float scale = 1.0;
 float fov = PI/3.0;
 boolean shiftpressed;
 boolean saveframe;
+boolean paused = false;
 
 void setup() {
     createMTDBT2F4D();
     size(720, 720, P3D);
+    // size(1080, 1080,P3D);
 
     textSize(fontSize);
     textAlign(CENTER);
@@ -44,17 +45,8 @@ void draw() {
     if (saveframe)
         beginRaw(PDF, "output-####.pdf");
 
-    if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {
-      thisFont += fontRangeDirection;
-    } else {
-      fontRangeDirection *= -1;
-      thisFont += fontRangeDirection;
-    }
-    textFont(font[thisFont]);
-
     background(0,0,255);
     noStroke();
-    fill(255,30);
 
     // pushMatrix();
     translate(width/2, height/2);
@@ -72,12 +64,37 @@ void draw() {
     // translate(width/2, height/2);
     rotateY(rotationY);
     rotateX(rotationX);
-    scale(scale);
+    scale(scale);    	
+
+    /*
+
+    // straight
+		
+    fill(255,30);
+    updatefont();
 
     for (int i=0; i<100; i+=3) {
         // text("JASON", 0, 0, i);
-        text("SYNTHESIZER", 0, 0, i);
+        // text("SYNTHESIZER", 0, 0, i);
         // text("SPEKTRIX", 0, 0, i);
+        // text("S", 0, 0, i);
+        text(fontLength, 0, 0, i);
+    }
+    */
+	
+    // projected ornament
+
+    fill(255,50);
+
+    for (int i=0; i<fontLength; i++) {
+    	updatefont();
+	if (i == fontLength-1)
+            fill(255);
+	else 
+	    fill(255,50);
+        // text("SYNTHESIZER", 0, 0, i*10);
+        text("FOREVER", 0, 0, i*10);
+        // text("S", 0, 0, i*10);
     }
 
     if (saveframe) {
@@ -131,10 +148,11 @@ void keyPressed() {
             if (scale > 0.05)
                 scale-=0.05;
             break;
-        case ' ':    
+        case 's':    
             saveframe = true;
-            if (debug)
-                println("fov = " + fov + " / scale = " + scale);
+            break;
+        case ' ':    
+	    paused = !paused;
             break;
         default:
             break;
@@ -194,3 +212,16 @@ void createMTDBT2F4D() {
     }
     createMTDBT2F4Dbusy = false;
 }
+
+void updatefont() {
+	if (!paused) {
+		if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {
+			thisFont += fontRangeDirection;        
+		} else {            
+			fontRangeDirection *= -1;
+			thisFont += fontRangeDirection;
+		}
+	}    		
+	textFont(font[thisFont]);
+}
+

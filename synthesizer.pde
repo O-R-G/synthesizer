@@ -7,7 +7,7 @@ import processing.pdf.*;
 
 PFont font[];     // array of references to fonts
 String fontnames[];         // original source names
-int fontSize = 96;  
+int fontSize = 48;  
 int fontLength;  // length of font[] (computed when filled)
 int thisFont; // pointer to font[] of currently selected
 int fontLoadStart = 0; // first numbered font to try
@@ -75,8 +75,8 @@ void draw() {
     scale(scale);
 
     for (int i=0; i<100; i+=3) {
-        text("JASON", 0, 0, i);
-        // text("SYNTHESIZER", 0, 0, i);
+        // text("JASON", 0, 0, i);
+        text("SYNTHESIZER", 0, 0, i);
         // text("SPEKTRIX", 0, 0, i);
     }
 

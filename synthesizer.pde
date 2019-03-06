@@ -35,7 +35,7 @@ String typed = "S";
 void setup() {
     createMTDBT2F4D();
     // size(720, 720, P3D);
-    size(720, 1280, P3D);
+    size(900, 1600, P3D);
     textSize(fontSize);
     textAlign(CENTER);
     noStroke();

@@ -7,9 +7,10 @@ import processing.pdf.*;
 
 PFont font[];     // array of references to fonts
 String fontnames[];         // original source names
-int fontSize = 96;
+int fontSize = 200;
 int fontLength;  // length of font[] (computed when filled)
 int thisFont; // pointer to font[] of currently selected
+int pausedFont; // pointer to font[] where currently paused
 int fontLoadStart = 0; // first numbered font to try
 int fontLoadEnd = 49; // last numbered font to try 
 int fontRangeStart; // pointer to font[], range min
@@ -29,72 +30,48 @@ float fov = PI/3.0;
 boolean shiftpressed;
 boolean saveframe;
 boolean paused = false;
+String typed = "S";
 
 void setup() {
     createMTDBT2F4D();
-    size(720, 720, P3D);
-    // size(1080, 1080,P3D);
-
+    // size(720, 720, P3D);
+    size(720, 1280, P3D);
     textSize(fontSize);
     textAlign(CENTER);
+    noStroke();
+    fill(255);
     updatePerspective(fov);
 }
 
 void draw() {
-
     if (saveframe)
         beginRaw(PDF, "output-####.pdf");
 
-    background(0,0,255);
-    noStroke();
-
-    // pushMatrix();
     translate(width/2, height/2);
-    // rotate(rotation);
-    ortho();
-
-    // lighting 
-
+    rotateY(rotationY);
+    rotateX(rotationX);
+    scale(scale);
     ambientLight(128, 128, 128);
     directionalLight(128, 128, 128, 0, 0, -1);
     lightFalloff(1, 0, 0);
     lightSpecular(128, 128, 128);
     shininess(2.0);
+    ortho();
 
-    // translate(width/2, height/2);
-    rotateY(rotationY);
-    rotateX(rotationX);
-    scale(scale);    	
-
-    /*
-
-    // straight
-		
-    fill(255,30);
-    updatefont();
-
-    for (int i=0; i<100; i+=3) {
-        // text("JASON", 0, 0, i);
-        // text("SYNTHESIZER", 0, 0, i);
-        // text("SPEKTRIX", 0, 0, i);
-        // text("S", 0, 0, i);
-        text(fontLength, 0, 0, i);
-    }
-    */
-	
     // projected ornament
+ 
+    if (paused)
+        thisFont = pausedFont;
 
-    fill(255,50);
+    background(0);
 
     for (int i=0; i<fontLength; i++) {
     	updatefont();
-	if (i == fontLength-1)
+	    if (i == fontLength-1)
             fill(255);
-	else 
-	    fill(255,50);
-        text("SYNTHESIZER", 0, 0, i*10);
-        // text("FOREVER", 0, 0, i*10);
-        // text("S", 0, 0, i*10);
+	    else 
+	        fill(255, 50);
+        text(typed, 0, 0, i*5);
     }
 
     if (saveframe) {
@@ -103,8 +80,11 @@ void draw() {
     }
 
     if (debug) {
-        println(nf(((counter/30) / 1000) / 60, 2) + ":" + nf(((counter/30) / 1000) % 60, 2));
+        // println(nf(((counter/30) / 1000) / 60, 2) + ":" + nf(((counter/30) / 1000) % 60, 2));
         println(nf((millis() / 1000) / 60, 2) + ":" + nf((millis() / 1000) % 60, 2));
+        if (paused)
+            println("** " + pausedFont + " **");
+        println(typed);
     }
 }
 
@@ -134,6 +114,9 @@ void keyPressed() {
         }
     }
     switch(key) {
+
+        /* control */
+
         case '=':
             adjustspeeds++;
             break;
@@ -148,13 +131,37 @@ void keyPressed() {
             if (scale > 0.05)
                 scale-=0.05;
             break;
-        case 's':    
+        case '`':    
             saveframe = true;
             break;
         case ' ':    
-	    paused = !paused;
+	        paused = !paused;
+            pausedFont = thisFont;
+            break;
+
+        /* type */
+
+        case RETURN:
+            typed = "";
+            break;
+        case ENTER:
+            typed = "";
+            break;
+        case BACKSPACE:
+            if (typed.length() > 0) {
+                typed = typed.substring(0, typed.length()-1);
+            }
+            break;
+        case DELETE:
+            if (typed.length() > 0) {
+                typed = typed.substring(0, typed.length()-1);
+            }
             break;
         default:
+            if (createMTDBT2F4Dbusy) {
+                typed = "";
+            }
+            typed += key;
             break;
     }
 }
@@ -214,14 +221,14 @@ void createMTDBT2F4D() {
 }
 
 void updatefont() {
-	if (!paused) {
+	// if (!paused) {
 		if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {
 			thisFont += fontRangeDirection;        
 		} else {            
 			fontRangeDirection *= -1;
 			thisFont += fontRangeDirection;
 		}
-	}    		
+	// }    		
 	textFont(font[thisFont]);
 }
 

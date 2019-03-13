@@ -7,7 +7,7 @@ import processing.pdf.*;
 
 PFont font[];     // array of references to fonts
 String fontnames[];         // original source names
-int fontSize = 200;
+int fontSize = 100;
 int fontLength;  // length of font[] (computed when filled)
 int thisFont; // pointer to font[] of currently selected
 int pausedFont; // pointer to font[] where currently paused
@@ -16,17 +16,20 @@ int fontLoadEnd = 49; // last numbered font to try
 int fontRangeStart; // pointer to font[], range min
 int fontRangeEnd; // pointer to font[], range max
 int fontRangeDirection = 1; // only two values, 1 or -1
-    
-boolean debug = true;
-boolean createMTDBT2F4Dbusy = true; // when generating MTDBT2F4Ds
-
-float[] dimensions;
 int counter;
+int z = 0;
+    
+float[] dimensions;
 float adjustspeeds = 1.0;
 float rotationX = 0.0;
 float rotationY = 0.0;
 float scale = 1.0;
 float fov = PI/3.0;
+float wind = 0.0;
+
+boolean debug = true;
+boolean windy = false;
+boolean createMTDBT2F4Dbusy = true; // when generating MTDBT2F4Ds
 boolean shiftpressed;
 boolean saveframe;
 boolean paused = false;
@@ -35,9 +38,9 @@ String typed = "S";
 void setup() {
     createMTDBT2F4D();
     size(720, 720, P3D);
-    // size(900, 1600, P3D);
+    // size(900, 1600, P3D);    // vertical monitor
     textSize(fontSize);
-    textAlign(CENTER);
+    textAlign(CENTER, CENTER);
     noStroke();
     fill(255);
     updatePerspective(fov);
@@ -47,10 +50,12 @@ void draw() {
     if (saveframe)
         beginRaw(PDF, "output-####.pdf");
 
-    translate(width/2, height/2);
+    translate(width/2, height/2, 0);
+    wind *= 1/1.001;
     rotateY(rotationY);
-    rotateX(rotationX);
+    rotateX(rotationX + wind);
     scale(scale);
+
     ambientLight(128, 128, 128);
     directionalLight(128, 128, 128, 0, 0, -1);
     lightFalloff(1, 0, 0);
@@ -65,14 +70,21 @@ void draw() {
 
     background(0);
 
+
     for (int i=0; i<fontLength; i++) {
+    // for (int i=-midZ; i<midZ; i++) {
     	updatefont();
+        z = (i - fontLength/2) * 5;
+
+
 	    if (i == fontLength-1)
             fill(255);
 	    else 
 	        fill(255, 50);
-        text(typed, 0, 0, i*5);
+        // text(typed, 0, 0, i*5);
+        text(typed, 0, 0, z);
     }
+
 
     if (saveframe) {
         endRaw();
@@ -81,10 +93,11 @@ void draw() {
 
     if (debug) {
         // println(nf(((counter/30) / 1000) / 60, 2) + ":" + nf(((counter/30) / 1000) % 60, 2));
-        println(nf((millis() / 1000) / 60, 2) + ":" + nf((millis() / 1000) % 60, 2));
+        // println(nf((millis() / 1000) / 60, 2) + ":" + nf((millis() / 1000) % 60, 2));
         if (paused)
             println("** " + pausedFont + " **");
-        println(typed);
+        // println(typed);
+        println(rotationX + " : " + rotationY);
     }
 }
 
@@ -130,6 +143,13 @@ void keyPressed() {
         case '_':
             if (scale > 0.05)
                 scale-=0.05;
+            break;
+        case '!':
+            windy=!windy;
+            if (windy) 
+                wind = 10.0;
+            else 
+                wind = 0.0;
             break;
         case '`':    
             saveframe = true;

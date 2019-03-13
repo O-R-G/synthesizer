@@ -1,4 +1,7 @@
-- rotate from 3d centerpoint, keep locked on screen center
++ rotate from 3d centerpoint, keep locked on screen center
+x add camera()
++ add spin movement (wind) 
+- fix wind so consistent
 - add opacity adjust
 - add density adjust
 - add speed adjust

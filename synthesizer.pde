@@ -4,9 +4,11 @@
 // based on tetracono and mtdbt2fx
 
 import processing.pdf.*;
+import processing.sound.*;
 
-PFont font[];     // array of references to fonts
-String fontnames[];         // original source names
+SinOsc[] sines;         // array of sine wave oscillators
+PFont font[];           // array of references to fonts
+String fontnames[];     // original source names
 int fontSize = 100;
 int fontLength;  // length of font[] (computed when filled)
 int thisFont; // pointer to font[] of currently selected
@@ -33,7 +35,7 @@ boolean createMTDBT2F4Dbusy = true; // when generating MTDBT2F4Ds
 boolean shiftpressed;
 boolean saveframe;
 boolean paused = false;
-String typed = "S";
+String typed = "";
 
 void setup() {
     createMTDBT2F4D();
@@ -44,6 +46,7 @@ void setup() {
     noStroke();
     fill(255);
     updatePerspective(fov);
+    create_sines(26);
 }
 
 void draw() {
@@ -56,35 +59,31 @@ void draw() {
     rotateX(rotationX + wind);
     scale(scale);
 
+    // sin_harmonic.freq(440/(thisFont+1));
+
     ambientLight(128, 128, 128);
     directionalLight(128, 128, 128, 0, 0, -1);
     lightFalloff(1, 0, 0);
     lightSpecular(128, 128, 128);
     shininess(2.0);
     ortho();
-
-    // projected ornament
  
     if (paused)
         thisFont = pausedFont;
 
+    // projected ornament
+
     background(0);
 
-
     for (int i=0; i<fontLength; i++) {
-    // for (int i=-midZ; i<midZ; i++) {
     	updatefont();
         z = (i - fontLength/2) * 5;
-
-
 	    if (i == fontLength-1)
             fill(255);
 	    else 
 	        fill(255, 50);
-        // text(typed, 0, 0, i*5);
         text(typed, 0, 0, z);
     }
-
 
     if (saveframe) {
         endRaw();
@@ -97,7 +96,7 @@ void draw() {
         if (paused)
             println("** " + pausedFont + " **");
         // println(typed);
-        println(rotationX + " : " + rotationY);
+        // println(rotationX + " : " + rotationY);
     }
 }
 
@@ -167,23 +166,35 @@ void keyPressed() {
         case ENTER:
             typed = "";
             break;
-        case BACKSPACE:
+        case BACKSPACE: 
             if (typed.length() > 0) {
+                char deleted = typed.substring(typed.length()-1).charAt(0);
+                int index = int(deleted);
                 typed = typed.substring(0, typed.length()-1);
+                stop_sine_from_key(index);
             }
             break;
         case DELETE:
             if (typed.length() > 0) {
+                char deleted = typed.substring(typed.length()-1).charAt(0);
+                int index = int(deleted);
                 typed = typed.substring(0, typed.length()-1);
+                stop_sine_from_key(index);
             }
             break;
         default:
             if (createMTDBT2F4Dbusy) {
                 typed = "";
             }
-            typed += key;
+            // int key_uc = int(key) - 32;
+
+            if (int(key) >= 65 && int(key) <= 90) {
+                typed += key;
+                play_sine_from_key(int(key));
+            }
             break;
     }
+    println(int(key));
 }
 
 void keyReleased() {
@@ -241,14 +252,69 @@ void createMTDBT2F4D() {
 }
 
 void updatefont() {
-	// if (!paused) {
-		if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {
-			thisFont += fontRangeDirection;        
-		} else {            
-			fontRangeDirection *= -1;
-			thisFont += fontRangeDirection;
-		}
-	// }    		
+    if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {			
+        thisFont += fontRangeDirection;        
+    } else {            
+        fontRangeDirection *= -1;
+		thisFont += fontRangeDirection;
+	}
 	textFont(font[thisFont]);
+}
+
+void create_sines(int count) {
+
+    // build array of sine oscillator objects
+    // mapped to the capital letters of the alphabet
+
+    sines = new SinOsc[count];
+
+    for (int i=0; i<count; i++) {
+        sines[i] = new SinOsc(this);
+        sines[i].freq(440*5/(i+1));
+    }
+}
+
+void play_sines(int count) {
+    for (int i=0; i<count; i++) {
+        sines[i].play();
+    }
+}
+
+void play_sine(int index) {
+    sines[index].play();
+}
+
+void stop_sine(int index) {
+    sines[index].stop();
+}
+
+void play_sine_from_key(int index) {
+
+    // ascii -- lc 97-122, uc 65-90
+    // expects only values between 65-90
+    // translate lc -> uc w/ int(key)-32
+    // but dont need to as this function
+    // only receives in-range values
+    // subtract 65 to correspond to sines[]
+    //
+    // use char() to get the letter itself
+
+    index-=65;
+    sines[index].play();
+}
+
+void stop_sine_from_key(int index) {
+
+    // ascii -- lc 97-122, uc 65-90
+    // expects only values between 65-90
+    // translate lc -> uc w/ int(key)-32
+    // but dont need to as this function
+    // only receives in-range values
+    // subtract 65 to correspond to sines[]
+    //
+    // use char() to get the letter itself
+
+    index-=65;
+    sines[index].stop();
 }
 

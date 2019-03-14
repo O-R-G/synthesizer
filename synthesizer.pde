@@ -110,6 +110,7 @@ void mouseDragged() {
     if (shiftpressed) {
         float adjustY = abs(mouseY - height/2);
         scale = map(adjustY, 0, height/2, 0, height/100);   
+        adjust_sines_amplitude(typed, map(scale, 0, 2.0, 0.0, 1.0));
     } else {
         float adjustX = mouseX - width/2;
         float adjustY = -1 * (mouseY - height/2);
@@ -136,13 +137,6 @@ void keyPressed() {
             if (adjustspeeds > 1.0)
                 adjustspeeds--;
             break;
-        case '+':
-            scale+=0.05;
-            break;
-        case '_':
-            if (scale > 0.05)
-                scale-=0.05;
-            break;
         case '!':
             windy=!windy;
             if (windy) 
@@ -156,6 +150,10 @@ void keyPressed() {
         case ' ':    
 	        paused = !paused;
             pausedFont = thisFont;
+            if (paused)
+                stop_sines(typed);
+            else
+                play_sines(typed);
             break;
 
         /* type */
@@ -166,31 +164,28 @@ void keyPressed() {
         case ENTER:
             typed = "";
             break;
-        case BACKSPACE: 
+        case BACKSPACE:
             if (typed.length() > 0) {
-                char deleted = typed.substring(typed.length()-1).charAt(0);
-                int index = int(deleted);
+                char key = typed.substring(typed.length()-1).charAt(0);
                 typed = typed.substring(0, typed.length()-1);
-                stop_sine_from_key(index);
+                stop_sine(ascii_to_index(int(key)));
             }
             break;
         case DELETE:
             if (typed.length() > 0) {
-                char deleted = typed.substring(typed.length()-1).charAt(0);
-                int index = int(deleted);
+                char key = typed.substring(typed.length()-1).charAt(0);
                 typed = typed.substring(0, typed.length()-1);
-                stop_sine_from_key(index);
+                stop_sine(ascii_to_index(int(key)));
             }
             break;
         default:
             if (createMTDBT2F4Dbusy) {
                 typed = "";
             }
-            // int key_uc = int(key) - 32;
-
             if (int(key) >= 65 && int(key) <= 90) {
                 typed += key;
-                play_sine_from_key(int(key));
+                if (!paused)
+                    play_sine(ascii_to_index(int(key)));
             }
             break;
     }
@@ -265,6 +260,7 @@ void create_sines(int count) {
 
     // build array of sine oscillator objects
     // mapped to the capital letters of the alphabet
+    // [0-25]
 
     sines = new SinOsc[count];
 
@@ -274,9 +270,33 @@ void create_sines(int count) {
     }
 }
 
-void play_sines(int count) {
-    for (int i=0; i<count; i++) {
-        sines[i].play();
+int ascii_to_index(int index) {
+
+    // take ascii code in range
+    // convert to corresponding index in sines[]
+    // ascii -- lc 97-122, uc 65-90
+    // function expects only values between 65-90
+    // translate lc -> uc w/ int(key)-32
+    // subtract 65 to correspond to sines[]
+
+    index-=65;
+    return index;
+}
+
+void play_sines(String typed) {
+    int i = 0;
+    while (i < typed.length()) {
+        char key = typed.charAt(i);
+        play_sine(ascii_to_index(int(key)));
+        i++;
+    }
+}
+
+void stop_sines(String typed) {
+    while (typed.length() > 0) {
+        char key = typed.substring(typed.length()-1).charAt(0);
+        typed = typed.substring(0, typed.length()-1);
+        stop_sine(ascii_to_index(int(key)));
     }
 }
 
@@ -288,33 +308,13 @@ void stop_sine(int index) {
     sines[index].stop();
 }
 
-void play_sine_from_key(int index) {
-
-    // ascii -- lc 97-122, uc 65-90
-    // expects only values between 65-90
-    // translate lc -> uc w/ int(key)-32
-    // but dont need to as this function
-    // only receives in-range values
-    // subtract 65 to correspond to sines[]
-    //
-    // use char() to get the letter itself
-
-    index-=65;
-    sines[index].play();
+void adjust_sines_amplitude(String typed, float amplitude) {
+    int i = 0;
+    while (i < typed.length()) {
+        char key = typed.charAt(i);
+        sines[ascii_to_index(int(key))].amp(amplitude);
+        i++;
+    }
 }
 
-void stop_sine_from_key(int index) {
-
-    // ascii -- lc 97-122, uc 65-90
-    // expects only values between 65-90
-    // translate lc -> uc w/ int(key)-32
-    // but dont need to as this function
-    // only receives in-range values
-    // subtract 65 to correspond to sines[]
-    //
-    // use char() to get the letter itself
-
-    index-=65;
-    sines[index].stop();
-}
 

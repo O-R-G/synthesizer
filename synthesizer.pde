@@ -18,6 +18,9 @@
     
     for another day ...
 
+    https://forum.processing.org/one/topic/points-on-svg-shape
+    https://n-e-r-v-o-u-s.com/tools/obj/
+
 */
 
 

@@ -6,8 +6,10 @@
 import processing.pdf.*;
 import processing.sound.*;
 
-SinOsc[] sines;         // array of sine wave oscillators
-PFont font[];           // array of references to fonts
+SinOsc[] sines;         // sine wave oscillators
+float[] frequencies;    // frequencies mapped to alphabet
+
+PFont font[];           // references to fonts
 String fontnames[];     // original source names
 int fontSize = 100;
 int fontLength;  // length of font[] (computed when filled)
@@ -46,7 +48,8 @@ void setup() {
     noStroke();
     fill(255);
     updatePerspective(fov);
-    create_sines(26);
+    init_sines(26);
+    init_frequencies(26);
 }
 
 void draw() {
@@ -159,23 +162,15 @@ void keyPressed() {
         /* type */
 
         case RETURN:
-            typed = "";
-            break;
         case ENTER:
             typed = "";
             break;
         case BACKSPACE:
-            if (typed.length() > 0) {
-                char key = typed.substring(typed.length()-1).charAt(0);
-                typed = typed.substring(0, typed.length()-1);
-                stop_sine(ascii_to_index(int(key)));
-            }
-            break;
         case DELETE:
             if (typed.length() > 0) {
-                char key = typed.substring(typed.length()-1).charAt(0);
                 typed = typed.substring(0, typed.length()-1);
-                stop_sine(ascii_to_index(int(key)));
+                int i = typed.length();
+                stop_sine(i);
             }
             break;
         default:
@@ -184,12 +179,14 @@ void keyPressed() {
             }
             if (int(key) >= 65 && int(key) <= 90) {
                 typed += key;
-                if (!paused)
-                    play_sine(ascii_to_index(int(key)));
+                int i = typed.length()-1;
+                if (!paused) {
+                    set_frequency(i, ascii_to_index(int(key)));
+                    play_sine(i);
+                }
             }
             break;
     }
-    println(int(key));
 }
 
 void keyReleased() {
@@ -256,24 +253,48 @@ void updatefont() {
 	textFont(font[thisFont]);
 }
 
-void create_sines(int count) {
+/*
 
-    // build array of sine oscillator objects
-    // mapped to the capital letters of the alphabet
-    // [0-25]
+    build frequencies[] and map to alphabet
+    build sines[], an array of oscillators (static)
+    then set frequency of next sines[] when key is pressed
+    based on mapping from ascii code to index of frequencies[]
+
+*/
+
+void init_sines(int count) {
+
+    // build placeholder array of sine oscillator objects
+    // static for practical, but could be a list 
 
     sines = new SinOsc[count];
 
     for (int i=0; i<count; i++) {
         sines[i] = new SinOsc(this);
-        sines[i].freq(440*5/(i+1));
     }
+
+    printArray(sines);
+}
+
+void init_frequencies(int count) {
+
+    // build array of sine oscillator frequencies
+    // mapped to the capital letters of the alphabet
+    // [0-25]
+
+    frequencies = new float[count];
+
+    for (int i=0; i<count; i++) {
+        frequencies[i] = 440*5/(i+1);
+    }
+
+    printArray(frequencies);
 }
 
 int ascii_to_index(int index) {
 
     // take ascii code in range
-    // convert to corresponding index in sines[]
+    // convert to corresponding index in frequencies[]
     // ascii -- lc 97-122, uc 65-90
     // function expects only values between 65-90
     // translate lc -> uc w/ int(key)-32
@@ -283,38 +304,43 @@ int ascii_to_index(int index) {
     return index;
 }
 
+void set_frequency(int i, int index) {
+
+    // use ascii_to_index to address frequencies[]
+    // assign existing sine a frequency based on key
+
+    sines[i] = new SinOsc(this);
+    sines[i].freq(frequencies[index]);
+}
+
+void play_sine(int i) {
+    sines[i].play();
+}
+
+void stop_sine(int i) {
+    sines[i].stop();
+}
+
 void play_sines(String typed) {
     int i = 0;
     while (i < typed.length()) {
-        char key = typed.charAt(i);
-        play_sine(ascii_to_index(int(key)));
+        play_sine(i);
         i++;
     }
 }
 
 void stop_sines(String typed) {
-    while (typed.length() > 0) {
-        char key = typed.substring(typed.length()-1).charAt(0);
-        typed = typed.substring(0, typed.length()-1);
-        stop_sine(ascii_to_index(int(key)));
+    int i = 0;
+    while (i < typed.length()) {
+        stop_sine(i);
+        i++;
     }
-}
-
-void play_sine(int index) {
-    sines[index].play();
-}
-
-void stop_sine(int index) {
-    sines[index].stop();
 }
 
 void adjust_sines_amplitude(String typed, float amplitude) {
     int i = 0;
     while (i < typed.length()) {
-        char key = typed.charAt(i);
-        sines[ascii_to_index(int(key))].amp(amplitude);
+        sines[i].amp(amplitude);
         i++;
     }
 }
-
-

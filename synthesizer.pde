@@ -3,6 +3,24 @@
 //
 // based on tetracono and mtdbt2fx
 
+/*
+
+    currently working on 3d output to .obj 
+    use geomerative library to convert letter to a shape
+    then get the points of that shape
+    construct a 3d TRIANGLES mesh by drawing straight lines
+    from point on one letter to matching point on second letter
+    
+    need to use .obj library to output file
+    or use .dxf and then convert, but not ideal
+    tried rhino but that seems too involved
+    and better to use this so that looks exactly correct
+    
+    for another day ...
+
+*/
+
+
 import processing.pdf.*;
 import processing.dxf.*;
 import processing.sound.*;

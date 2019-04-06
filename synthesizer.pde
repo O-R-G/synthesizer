@@ -4,6 +4,7 @@
 // based on tetracono and mtdbt2fx
 
 import processing.pdf.*;
+import processing.dxf.*;
 import processing.sound.*;
 
 SinOsc[] sines;         // sine wave oscillators
@@ -35,8 +36,9 @@ boolean debug = true;
 boolean windy = false;
 boolean createMTDBT2F4Dbusy = true; // when generating MTDBT2F4Ds
 boolean shiftpressed;
-boolean pdf_saveframe;
+boolean saveframe;
 boolean pdf_3d = false;
+boolean dxf_3d = true;
 boolean paused = false;
 String typed = "";
 
@@ -54,9 +56,12 @@ void setup() {
 }
 
 void draw() {
-    if (pdf_saveframe)
+
+    if (saveframe)
         if (pdf_3d)
             beginRaw(PDF, "out/pdf/3d-####.pdf");           
+        else if (dxf_3d)
+            beginRaw(DXF, "out/dxf/3d-####.dxf");
         else
             beginRecord(PDF, "out/pdf/2d-####.pdf");    
 
@@ -90,12 +95,12 @@ void draw() {
         text(typed, 0, 0, z);
     }
 
-    if (pdf_saveframe) {
-        if (pdf_3d)
+    if (saveframe) {
+        if (pdf_3d || dxf_3d)
             endRaw();
         else
             endRecord();
-        pdf_saveframe = false;
+        saveframe = false;
     }
 
     if (debug) {
@@ -155,7 +160,7 @@ void keyPressed() {
                 wind = 0.0;
             break;
         case '`':    
-            pdf_saveframe = true;
+            saveframe = true;
             break;
         case ' ':    
 	        paused = !paused;
@@ -212,7 +217,7 @@ void createMTDBT2F4D() {
     // outline fonts look crisp, but run slow
     // .vlw fonts run fast, but are bitmapped
         
-    if (pdf_3d)
+    if (pdf_3d || dxf_3d)
         textMode(SHAPE);    // outline fonts 
     else
         textMode(MODEL);    // .vlw texture fonts

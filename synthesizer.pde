@@ -118,12 +118,14 @@ void mouseDragged() {
     if (shiftpressed) {
         float adjustY = abs(mouseY - height/2);
         scale = map(adjustY, 0, height/2, 0, height/100);   
-        adjust_sines_amplitude(typed, map(scale, 0, 2.0, 0.0, 1.0));
+        update_amplitude(typed, map(scale, 0, 2.0, 0.0, 1.0));
     } else {
         float adjustX = mouseX - width/2;
         float adjustY = -1 * (mouseY - height/2);
         rotationX = map(adjustY, 0, height/2, 0, PI);
         rotationY = map(adjustX, 0, width/2, 0, PI);
+        // float pan = map(adjustX, 0, width/2, -1.0, 1.0);
+        // update_pan(typed, pan);
         fov = map(adjustX, 0, width/2, PI/3.0, PI/1.0);   
     }
 }
@@ -344,10 +346,18 @@ void stop_sines(String typed) {
     }
 }
 
-void adjust_sines_amplitude(String typed, float amplitude) {
+void update_amplitude(String typed, float amplitude) {
     int i = 0;
     while (i < typed.length()) {
         sines[i].amp(amplitude);
+        i++;
+    }
+}
+
+void update_pan(String typed, float pan) {
+    int i = 0;
+    while (i < typed.length()) {
+        sines[i].pan(pan);
         i++;
     }
 }

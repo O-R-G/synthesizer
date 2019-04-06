@@ -38,7 +38,7 @@ boolean createMTDBT2F4Dbusy = true; // when generating MTDBT2F4Ds
 boolean shiftpressed;
 boolean saveframe;
 boolean pdf_3d = false;
-boolean dxf_3d = true;
+boolean dxf_3d = false;
 boolean paused = false;
 String typed = "";
 

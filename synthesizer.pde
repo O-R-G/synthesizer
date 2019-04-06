@@ -35,7 +35,8 @@ boolean debug = true;
 boolean windy = false;
 boolean createMTDBT2F4Dbusy = true; // when generating MTDBT2F4Ds
 boolean shiftpressed;
-boolean saveframe;
+boolean pdf_saveframe;
+boolean pdf_3d = false;
 boolean paused = false;
 String typed = "";
 
@@ -53,16 +54,17 @@ void setup() {
 }
 
 void draw() {
-    if (saveframe)
-        beginRaw(PDF, "output-####.pdf");
+    if (pdf_saveframe)
+        if (pdf_3d)
+            beginRaw(PDF, "out/pdf/3d-####.pdf");           
+        else
+            beginRecord(PDF, "out/pdf/2d-####.pdf");    
 
     translate(width/2, height/2, 0);
     wind *= 1/1.001;
     rotateY(rotationY);
     rotateX(rotationX + wind);
     scale(scale);
-
-    // sin_harmonic.freq(440/(thisFont+1));
 
     ambientLight(128, 128, 128);
     directionalLight(128, 128, 128, 0, 0, -1);
@@ -88,9 +90,12 @@ void draw() {
         text(typed, 0, 0, z);
     }
 
-    if (saveframe) {
-        endRaw();
-        saveframe = false;
+    if (pdf_saveframe) {
+        if (pdf_3d)
+            endRaw();
+        else
+            endRecord();
+        pdf_saveframe = false;
     }
 
     if (debug) {
@@ -148,7 +153,7 @@ void keyPressed() {
                 wind = 0.0;
             break;
         case '`':    
-            saveframe = true;
+            pdf_saveframe = true;
             break;
         case ' ':    
 	        paused = !paused;
@@ -204,9 +209,11 @@ void createMTDBT2F4D() {
     // biggest issue is that redundantly named fonts create referencing problems
     // outline fonts look crisp, but run slow
     // .vlw fonts run fast, but are bitmapped
-
-    // textMode(SHAPE); // outline fonts 
-    textMode(MODEL);    // .vlw texture fonts
+        
+    if (pdf_3d)
+        textMode(SHAPE);    // outline fonts 
+    else
+        textMode(MODEL);    // .vlw texture fonts
       
     int fontLoadLimit = fontLoadEnd - fontLoadStart;
     font = new PFont[fontLoadLimit];

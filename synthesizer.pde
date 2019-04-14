@@ -23,7 +23,6 @@
 
 */
 
-
 import processing.pdf.*;
 import processing.dxf.*;
 import processing.sound.*;
@@ -196,6 +195,8 @@ void keyPressed() {
 
         case RETURN:
         case ENTER:
+            for (int i=typed.length()-1; i>=0; i--)
+                stop_sine(i);
             typed = "";
             break;
         case BACKSPACE:
@@ -210,11 +211,19 @@ void keyPressed() {
             if (createMTDBT2F4Dbusy) {
                 typed = "";
             }
-            if (int(key) >= 65 && int(key) <= 90) {
-                typed += key;
+
+            // valid letter? convert to uppercase
+                
+            int key_in_range = 0;  
+            if (int(key) >= 65 && int(key) <= 90)
+                key_in_range = int(key);        
+            else if (int(key) >= 97 && int(key) <= 122)
+                key_in_range = key-32;          
+            if (key_in_range != 0) {
+                typed += char(key_in_range);
                 int i = typed.length()-1;
                 if (!paused) {
-                    set_frequency(i, ascii_to_index(int(key)));
+                    set_frequency(i, ascii_to_index(key_in_range));
                     play_sine(i);
                 }
             }
@@ -335,6 +344,12 @@ int ascii_to_index(int index) {
     // translate lc -> uc w/ int(key)-32
     // subtract 65 to correspond to sines[]
 
+println(index);
+
+/*
+    if (index >= 97 && index <= 122)
+        index-=32; 
+*/
     index-=65;
     return index;
 }

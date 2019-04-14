@@ -341,15 +341,9 @@ int ascii_to_index(int index) {
     // convert to corresponding index in frequencies[]
     // ascii -- lc 97-122, uc 65-90
     // function expects only values between 65-90
-    // translate lc -> uc w/ int(key)-32
+    // as key is converted from lc -> uc in keyDown
     // subtract 65 to correspond to sines[]
 
-println(index);
-
-/*
-    if (index >= 97 && index <= 122)
-        index-=32; 
-*/
     index-=65;
     return index;
 }

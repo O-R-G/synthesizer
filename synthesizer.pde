@@ -60,6 +60,7 @@ boolean saveframe;
 boolean pdf_3d = false;
 boolean dxf_3d = false;
 boolean paused = false;
+boolean is_3d = false;
 String typed = "";
 
 void setup() {
@@ -97,7 +98,7 @@ void draw() {
     lightSpecular(128, 128, 128);
     shininess(2.0);
     ortho();
- 
+    
     if (paused)
         thisFont = pausedFont;
 
@@ -105,14 +106,26 @@ void draw() {
 
     background(0);
 
-    for (int i=0; i<fontLength; i++) {
-    	updatefont();
-        z = (i - fontLength/2) * 5;
-	    if (i == fontLength-1)
-            fill(255);
-	    else 
-	        fill(255, 50);
+    // w/ 3d functionality ON
+    if (is_3d) {
+      for (int i=0; i<fontLength; i++) {
+      	updatefont();
+          z = (i - fontLength/2) * 5;
+  	    if (i == fontLength-1)
+          fill(255);
+  	    else 
+  	      fill(255, 50);
         text(typed, 0, 0, z);
+      }
+    }
+    
+    // w/ 3d functionality OFF, only 2D view
+    else {
+      int i = 0;
+      updatefont();
+      z = (i - fontLength/2) * 5;
+      fill(255);
+      text(typed, 0, 0, z);
     }
 
     if (saveframe) {
@@ -140,18 +153,22 @@ void updatePerspective(float fov) {
 
 void mouseDragged() {
     // global 3d controls
-    if (shiftpressed) {
+    if (is_3d == true) { 
+      
+      if (shiftpressed) {
         float adjustY = abs(mouseY - height/2);
         scale = map(adjustY, 0, height/2, 0, height/100);   
         update_amplitude(typed, map(scale, 0, 2.0, 0.0, 1.0));
-    } else {
+      } else {
         float adjustX = mouseX - width/2;
         float adjustY = -1 * (mouseY - height/2);
         rotationX = map(adjustY, 0, height/2, 0, PI);
         rotationY = map(adjustX, 0, width/2, 0, PI);
         // float pan = map(adjustX, 0, width/2, -1.0, 1.0);
         // update_pan(typed, pan);
-        fov = map(adjustX, 0, width/2, PI/3.0, PI/1.0);   
+        fov = map(adjustX, 0, width/2, PI/3.0, PI/1.0);
+      }
+      
     }
 }
 
@@ -190,6 +207,14 @@ void keyPressed() {
             else
                 play_sines(typed);
             break;
+        case '3': 
+          is_3d = !is_3d;
+          if (is_3d == false) {
+            rotationX = 0.0;
+            rotationY = 0.0;
+            z = 0;
+          }
+          break;
 
         /* type */
 
@@ -288,10 +313,10 @@ void createMTDBT2F4D() {
 }
 
 void updatefont() {
-    if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {			
-        thisFont += fontRangeDirection;        
-    } else {            
-        fontRangeDirection *= -1;
+  if ((thisFont + fontRangeDirection >= fontRangeStart) && (thisFont + fontRangeDirection <= fontRangeEnd)) {			
+    thisFont += fontRangeDirection;        
+  } else {            
+    fontRangeDirection *= -1;
 		thisFont += fontRangeDirection;
 	}
 	textFont(font[thisFont]);

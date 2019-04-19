@@ -60,7 +60,7 @@ boolean saveframe;
 boolean pdf_3d = false;
 boolean dxf_3d = false;
 boolean paused = false;
-boolean is_3d = false;
+boolean is_3d = true;
 String typed = "";
 
 void setup() {
@@ -207,12 +207,13 @@ void keyPressed() {
             else
                 play_sines(typed);
             break;
-        case '3': 
+        case '2': 
           is_3d = !is_3d;
           if (is_3d == false) {
             rotationX = 0.0;
             rotationY = 0.0;
             z = 0;
+            stop_sines(typed);
           }
           break;
 

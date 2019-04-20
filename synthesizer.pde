@@ -214,6 +214,8 @@ void keyPressed() {
             rotationY = 0.0;
             z = 0;
             stop_sines(typed);
+          } else {
+            play_sines(typed);
           }
           break;
 

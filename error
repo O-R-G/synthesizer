@@ -1,10 +1,10 @@
-2019-04-20 13:56:20.208 java[29364:6237887] pid(29364)/euid(501) is calling TIS/TSM in non-main thread environment, ERROR : This is NOT allowed. Please call TIS/TSM in main thread!!!
+2019-05-31 15:58:02.051 java[3873:1026916] pid(3873)/euid(501) is calling TIS/TSM in non-main thread environment, ERROR : This is NOT allowed. Please call TIS/TSM in main thread!!!
 Display 2 does not exist, using the default display instead.
 Display 1 is sun.awt.CGraphicsDevice@37918c79
-2019-04-20 13:56:20.614 java[29364:6237887] WARNING: NSWindow drag regions should only be invalidated on the Main Thread! This will throw an exception in the future. Called from (
-	0   AppKit                              0x00007fff36791e63 -[NSWindow(NSWindow_Theme) _postWindowNeedsToResetDragMarginsUnlessPostingDisabled] + 378
-	1   AppKit                              0x00007fff3678f253 -[NSWindow _initContent:styleMask:backing:defer:contentView:] + 1479
-	2   AppKit                              0x00007fff3678ec86 -[NSWindow initWithContentRect:styleMask:backing:defer:] + 45
-	3   libnativewindow_macosx.jnilib       0x000000010dbff3fe Java_jogamp_nativewindow_macosx_OSXUtil_CreateNSWindow0 + 398
-	4   ???                                 0x000000010df39a88 0x0 + 4529035912
+2019-05-31 15:58:02.418 java[3873:1026916] WARNING: NSWindow drag regions should only be invalidated on the Main Thread! This will throw an exception in the future. Called from (
+	0   AppKit                              0x00007fff512cb7eb -[NSWindow(NSWindow_Theme) _postWindowNeedsToResetDragMarginsUnlessPostingDisabled] + 378
+	1   AppKit                              0x00007fff512c8bdb -[NSWindow _initContent:styleMask:backing:defer:contentView:] + 1479
+	2   AppKit                              0x00007fff512c860e -[NSWindow initWithContentRect:styleMask:backing:defer:] + 45
+	3   libnativewindow_macosx.jnilib       0x00000001215733fe Java_jogamp_nativewindow_macosx_OSXUtil_CreateNSWindow0 + 398
+	4   ???                                 0x0000000105fc6a88 0x0 + 4395395720
 )

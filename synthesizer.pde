@@ -65,7 +65,8 @@ String typed = "";
 
 void setup() {
     createMTDBT2F4D();
-    size(720, 720, P3D);
+    size(1200, 1200, P3D);
+    // size(720, 720, P3D);
     // size(900, 1600, P3D);    // vertical monitor
     textSize(fontSize);
     textAlign(CENTER, CENTER);
@@ -243,18 +244,29 @@ void keyPressed() {
             // valid letter? convert to uppercase
                 
             int key_in_range = 0;  
+            /*
             if (int(key) >= 65 && int(key) <= 90)
                 key_in_range = int(key);        
+            */
+  
+            key_in_range = int(key);          
+
+            /*
             else if (int(key) >= 97 && int(key) <= 122)
-                key_in_range = key-32;          
+                key_in_range = key-32;
+            */
+
             if (key_in_range != 0) {
                 typed += char(key_in_range);
                 int i = typed.length()-1;
+                /*
                 if (!paused) {
                     set_frequency(i, ascii_to_index(key_in_range));
                     play_sine(i);
                 }
+                */
             }
+
             break;
     }
 }

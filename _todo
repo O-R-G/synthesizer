@@ -5,3 +5,5 @@ x add camera()
 - add opacity adjust
 - add density adjust
 - add speed adjust
+- ease in / ease out of mtdbtf's so that 3d shape is a wave
+- add flag to work between two diff characters? S-->Z (maybe, maybe not)

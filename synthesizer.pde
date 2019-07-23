@@ -65,8 +65,8 @@ String typed = "";
 
 void setup() {
     createMTDBT2F4D();
-    size(1200, 1200, P3D);
-    // size(720, 720, P3D);
+    // size(1200, 1200, P3D);
+    size(720, 720, P3D);
     // size(900, 1600, P3D);    // vertical monitor
     textSize(fontSize);
     textAlign(CENTER, CENTER);

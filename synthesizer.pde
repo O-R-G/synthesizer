@@ -244,27 +244,20 @@ void keyPressed() {
             // valid letter? convert to uppercase
                 
             int key_in_range = 0;  
-            /*
             if (int(key) >= 65 && int(key) <= 90)
                 key_in_range = int(key);        
-            */
-  
-            key_in_range = int(key);          
-
-            /*
             else if (int(key) >= 97 && int(key) <= 122)
                 key_in_range = key-32;
-            */
+
+            // key_in_range = int(key);          
 
             if (key_in_range != 0) {
                 typed += char(key_in_range);
                 int i = typed.length()-1;
-                /*
                 if (!paused) {
                     set_frequency(i, ascii_to_index(key_in_range));
                     play_sine(i);
                 }
-                */
             }
 
             break;
@@ -367,9 +360,21 @@ void init_frequencies(int count) {
     // [0-25]
 
     frequencies = new float[count];
+        
+    frequencies[0] = 110.0;     // A2
 
-    for (int i=0; i<count; i++) {
-        frequencies[i] = 440*5/(i+1);
+    // for (int i=0; i<count; i++) {
+    for (int i=1; i<count; i++) {
+
+        // A4 = 440.0 Hz    
+        // A5 = 880.0 Hz
+        // so to go up 1/12 of an octave,
+        // multiple by 12th root of 2
+        // or 1.059463
+
+        // frequencies[i] = 440*5/(i+1);
+        // frequencies[i]  = map(i, 0, count, 2000, 200);
+        frequencies[i] = frequencies[i-1] * 1.059463;
     }
 
     printArray(frequencies);
@@ -395,6 +400,8 @@ void set_frequency(int i, int index) {
 
     sines[i] = new SinOsc(this);
     sines[i].freq(frequencies[index]);
+
+    println("i: " + i + " / index: " + index);
 }
 
 void play_sine(int i) {
@@ -436,3 +443,4 @@ void update_pan(String typed, float pan) {
         i++;
     }
 }
+ 
